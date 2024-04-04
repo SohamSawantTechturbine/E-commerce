@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { useAuthContext } from '../../context';
 import { useLocation } from 'react-router-dom';
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
+toast.configure();
 function Payment() {
     const { totalPrice, cartdata } = useAuthContext();
     const location = useLocation();
@@ -65,7 +68,7 @@ function Payment() {
       const isFormValid = validateForm();
   
       if (isFormValid) {
-          alert('Form submission successful');
+        
        //   const newdata = [firstName, lastName, phone, email, address, city, state, totalPrice];
           const newdata={
                  firstname:firstName,
@@ -80,6 +83,7 @@ function Payment() {
           setpaymentDetails((prev) => {
               const updatedPaymentDetails = [{...prev, newdata}];
               localStorage.setItem('AfterPaymentDetail', JSON.stringify(updatedPaymentDetails));
+              { toast("your payement succesfull")}
               return updatedPaymentDetails;
           });
       } else {

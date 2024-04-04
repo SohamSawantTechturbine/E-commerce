@@ -12,6 +12,8 @@ import Footer from './components/Footer/Footer'
 import Addcart from './components/AddCart/Addcart'
 import Payment from './components/Payment/Payment'
 
+
+
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
 
