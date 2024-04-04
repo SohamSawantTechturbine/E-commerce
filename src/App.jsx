@@ -27,9 +27,9 @@ function App() {
         <BrowserRouter>
         <Navbar onSearchChange={handleSearchChange} />
      
-          <Routes>
+          <Routes>   <Route path="/" element={<Login />} />
             <Route path='/home' element={<Home  searchTerm={searchTerm} />} />
-            <Route path="/" element={<Login />} />
+         
             <Route path="/register" element={<Register />} />
             <Route path="/about"  element={<About/>}/>
             <Route path="/contact"  element={<Contact/>}/>

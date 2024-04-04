@@ -29,6 +29,12 @@ function Addcart() {
     const updatedCart = cartdata.filter((product) => product.id !== productId);
     setcartdata(updatedCart);
     updateTotalPrice(updatedCart);
+    {
+      setQuantities(prevQuantities => ({
+        ...prevQuantities,
+        [productId]: (prevQuantities[productId] || 0) -prevQuantities[productId]
+      }));
+    }
   };
 
   const updateTotalPrice = (cart) => {
