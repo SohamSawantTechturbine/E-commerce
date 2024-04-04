@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 export const Navbar = ({ onSearchChange }) => {
     const [searchTerm, setSearchTerm] = useState('');
-    const { usernameInput, cartdata,products } = useAuthContext();
+    const { usernameInput } = useAuthContext();
 
     const handleSearchChange = (event) => {
         const term = event.target.value;
@@ -13,9 +13,7 @@ export const Navbar = ({ onSearchChange }) => {
         onSearchChange(term);
     };
     const navigate = useNavigate();
-    // const handleProceedToCart=()=>{
-    //    navigate("/addcart",cartdata)
-    // }
+   
     const handleProceedToCart = () => {
         // Navigate to the cart page with the selected products
 

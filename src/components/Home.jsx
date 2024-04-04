@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 export const Home = ({ searchTerm }) => {
   const { usernameInput, cartdata, setcartdata } = useAuthContext();
   const [products, setProducts] = useState([]);
+  JSON.parse(localStorage.getItem("cartdata"))
   const navigate = useNavigate();
 
   useEffect(() => {

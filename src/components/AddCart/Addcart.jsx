@@ -2,11 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { useAuthContext } from '../../context';
 import { useNavigate } from 'react-router-dom';
 
+
 function Addcart() {
+  
   const { cartdata, setcartdata, totalPrice, setTotalPrice ,producttitle,setproducttitle } = useAuthContext();
   const navigate = useNavigate();
-  const [quantities, setQuantities] = useState({});
-  const [selectedProductTitle, setSelectedProductTitle] = useState('');
+ 
+
+  const [quantities, setQuantities] = useState(() => {
+    const storedQuantities = JSON.parse(localStorage.getItem('quantities'));
+    return storedQuantities || {};
+  });
   useEffect(() => {
     const storedCartData = JSON.parse(localStorage.getItem('cartData'));
     if (storedCartData) {
@@ -31,8 +37,11 @@ function Addcart() {
   };
 
   const navigateToPayment = () => {
-    navigate("/payment"  );
+    navigate("/payment", { state: { products: cartdata, quantities: quantities } } );
   };
+  useEffect(() => {
+    localStorage.setItem('quantities', JSON.stringify(quantities));
+  }, [quantities]);
 
   const addQuantity = (productId) => {
     setQuantities(prevQuantities => ({
