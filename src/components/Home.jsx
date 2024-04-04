@@ -62,7 +62,7 @@ export const Home = ({ searchTerm }) => {
     <>
       <div className="flex justify-center items-center h-full">
         <div className="max-w-4xl mx-auto px-4">
-          <h1 className="text-3xl font-bold mb-8">Welcome to our ShopCart  Store   ..Happy shopping</h1>
+          <h1 className="text-3xl font-bold mb-8">Welcome to our ShopCart  Store   ....Happy shopping</h1>
           <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-4 gap-2">
             <button className='rounded-lg p-2 mb-4' onClick={() => onCategoryFilter("men's clothing")}>men's clothing</button>
             <button className='rounded-lg p-2 mb-4' onClick={() => onCategoryFilter("women's clothing")}>women's clothing</button>
