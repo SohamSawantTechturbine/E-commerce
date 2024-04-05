@@ -1,33 +1,30 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuthContext } from '../context';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 toast.configure();
+
 export const Home = ({ searchTerm }) => {
- 
   const { usernameInput, cartdata, setcartdata } = useAuthContext();
   const [products, setProducts] = useState([]);
-  JSON.parse(localStorage.getItem("cartdata"))
   const navigate = useNavigate();
+  const location = useLocation();
+  const category = location.search ? new URLSearchParams(location.search).get('category') : null;
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get('https://fakestoreapi.com/products');
         setProducts(response.data);
-       
         localStorage.setItem('products', JSON.stringify(response.data));
-        
       } catch (error) {
         console.error('Error fetching products:', error);
       }
     };
 
-   
     const savedProducts = localStorage.getItem('products');
     if (savedProducts) {
       setProducts(JSON.parse(savedProducts));
@@ -38,7 +35,6 @@ export const Home = ({ searchTerm }) => {
 
   const handleAddToCart = (product) => {
     const user = JSON.parse(localStorage.getItem("userData"));
-
     user.forEach((i) => {
       if (i.username) {
         setcartdata((prev) => ([...prev, product]));
@@ -51,16 +47,17 @@ export const Home = ({ searchTerm }) => {
   const handleProceedToCart = () => {
     navigate('/addcart');
   };
-
-  const onCategoryFilter = (category) => {
-    const savedProducts = JSON.parse(localStorage.getItem('products'));
-    const filteredProducts = savedProducts.filter((product) =>
-      product.category.toLowerCase() === category.toLowerCase()
-    );
-    setProducts(filteredProducts);
-  };
-
- 
+  
+  useEffect(() => {
+    // Filter products based on category query parameter
+    if (category) {
+      const savedProducts = JSON.parse(localStorage.getItem('products'));
+      const filteredProducts = savedProducts.filter((product) =>
+        product.category.toLowerCase() === category.toLowerCase()
+      );
+      setProducts(filteredProducts);
+    }
+  }, [category]);
 
   return (
     <> 
@@ -69,13 +66,12 @@ export const Home = ({ searchTerm }) => {
           <h1 className="text-3xl font-bold mb-8">Welcome to our ShopCart  Store   ....Happy shopping</h1>
        
           <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-4 gap-2">
-            <button className='rounded-lg p-2 mb-4' onClick={() => onCategoryFilter("men's clothing")}>men's clothing</button>
-            <button className='rounded-lg p-2 mb-4' onClick={() => onCategoryFilter("women's clothing")}>women's clothing</button>
-            <button className='rounded-lg p-2 mb-4' onClick={() => onCategoryFilter("jewelery")}>jewelery</button>
-            <button className='rounded-lg p-2 mb-4' onClick={() => onCategoryFilter("electronics")}>electronics</button>
+            <button className='rounded-lg p-2 mb-4' onClick={() => navigate(`/home?category=men's clothing`)}>men's clothing</button>
+            <button className='rounded-lg p-2 mb-4' onClick={() => navigate(`/home?category=women's clothing`)}>women's clothing</button>
+            <button className='rounded-lg p-2 mb-4' onClick={() => navigate('/home?category=jewelery')}>jewelery</button>
+            <button className='rounded-lg p-2 mb-4' onClick={() => navigate('/home?category=electronics')}>electronics</button>
           </div>
 
-        
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {products
               .filter((product) =>
@@ -99,6 +95,3 @@ export const Home = ({ searchTerm }) => {
     </>
   );
 };
-
-
-
