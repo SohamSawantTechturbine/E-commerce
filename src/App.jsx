@@ -15,7 +15,7 @@ import Payment from './components/Payment/Payment'
 
 
 function App() {
-  const { mode,statemodename,modename ,setMode} = useAuthContext();
+
   const [searchTerm, setSearchTerm] = useState('');
 
   const handleSearchChange = (term) => {
@@ -29,7 +29,7 @@ function App() {
       <AuthContextProvider>
       
         <BrowserRouter>
-        <Navbar onSearchChange={handleSearchChange}  mode={mode} modename={modename} toggleMode={setMode} />
+        <Navbar onSearchChange={handleSearchChange} />
      
           <Routes>   <Route path="/" element={<Login />} />
             <Route path='/home' element={<Home  searchTerm={searchTerm} />} />
