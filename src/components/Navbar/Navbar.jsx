@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 export const Navbar = ({ onSearchChange }) => {
     const [searchTerm, setSearchTerm] = useState('');
-    const { usernameInput } = useAuthContext();
+    const { usernameInput} = useAuthContext();
 
     const handleSearchChange = (event) => {
         const term = event.target.value;
@@ -19,7 +19,7 @@ export const Navbar = ({ onSearchChange }) => {
 
         navigate('/addcart')
     }
-
+   
 
     return (
         <div>
@@ -52,6 +52,7 @@ export const Navbar = ({ onSearchChange }) => {
                                 {/* <span className="ml-2">Proceed to Cart ({cartdata.products.length})</span> */}
                             </Link>
                         </div>
+                        
                     </div>
                     <div className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-search">
                         <div className="relative mt-3 md:hidden">

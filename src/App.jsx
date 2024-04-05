@@ -3,7 +3,7 @@ import { Home } from "./components/Home"
 import { Login } from "./components/Login"
 import './App.css'
 import { Register } from './components/Register'
-import { AuthContextProvider } from './context'
+import { AuthContextProvider, useAuthContext} from './context'
 import { About } from './components/About/About'
 import Contact from './components/Contact/Contact'
 import { Navbar } from './components/Navbar/Navbar'
@@ -11,23 +11,25 @@ import { useState } from 'react'
 import Footer from './components/Footer/Footer'
 import Addcart from './components/AddCart/Addcart'
 import Payment from './components/Payment/Payment'
-
+//import { useAuthContext } from '../context';
 
 
 function App() {
+  const { mode,statemodename,modename ,setMode} = useAuthContext();
   const [searchTerm, setSearchTerm] = useState('');
 
   const handleSearchChange = (term) => {
     setSearchTerm(term);
   };
-
+ 
+  
   return (
     <>
       {/* <Login/> */}
       <AuthContextProvider>
       
         <BrowserRouter>
-        <Navbar onSearchChange={handleSearchChange} />
+        <Navbar onSearchChange={handleSearchChange}  mode={mode} modename={modename} toggleMode={setMode} />
      
           <Routes>   <Route path="/" element={<Login />} />
             <Route path='/home' element={<Home  searchTerm={searchTerm} />} />

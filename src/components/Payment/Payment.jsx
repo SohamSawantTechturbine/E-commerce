@@ -3,7 +3,7 @@ import { useAuthContext } from '../../context';
 import { useLocation } from 'react-router-dom';
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import jsPDF from 'jspdf'
 toast.configure();
 function Payment() {
     const { totalPrice, cartdata } = useAuthContext();
@@ -68,6 +68,31 @@ function Payment() {
       const isFormValid = validateForm();
   
       if (isFormValid) {
+        if (isFormValid) {
+            const pdf = new jsPDF();
+            pdf.text("Payment Details", 10, 10);
+            pdf.text(`First Name: ${firstName}`, 10, 20);
+            pdf.text(`Last Name: ${lastName}`, 10, 30);
+            pdf.text(`Phone: ${phone}`, 10, 40);
+            pdf.text(`Email: ${email}`, 10, 50);
+            pdf.text(`Address: ${address}`, 10, 60);
+            pdf.text(`City: ${city}`, 10, 70);
+            pdf.text(`State: ${state}`, 10, 80);
+        
+          
+            let y = 90; 
+            cartdata.forEach((product) => {
+                pdf.text(`Product: ${product.title}`, 10, y);
+                pdf.text(`Quantity: ${quantities[product.id] || 1}`, 170, y);
+                y += 10; 
+            });
+        
+            pdf.text(`Total Price: ${totalPrice}`, 10, y);
+        
+            // Save PDF
+            pdf.save('payment_details.pdf');
+        }
+        
         
        //   const newdata = [firstName, lastName, phone, email, address, city, state, totalPrice];
           const newdata={
@@ -83,7 +108,7 @@ function Payment() {
           setpaymentDetails((prev) => {
               const updatedPaymentDetails = [{...prev, newdata}];
               localStorage.setItem('AfterPaymentDetail', JSON.stringify(updatedPaymentDetails));
-              { toast("your payement succesfull")}
+              { toast("your payement succesfull,pdf download started")}
               return updatedPaymentDetails;
           });
       } else {

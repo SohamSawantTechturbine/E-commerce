@@ -63,7 +63,7 @@ export const Home = ({ searchTerm }) => {
  
 
   return (
-    <> { toast("Hello "+usernameInput)}
+    <> 
       <div className="flex justify-center items-center h-full">
         <div className="max-w-4xl mx-auto px-4">
           <h1 className="text-3xl font-bold mb-8">Welcome to our ShopCart  Store   ....Happy shopping</h1>
