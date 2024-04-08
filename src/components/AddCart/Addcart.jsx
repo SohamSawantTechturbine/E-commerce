@@ -49,13 +49,27 @@ function Addcart() {
     localStorage.setItem('quantities', JSON.stringify(quantities));
   }, [quantities]);
 
-  const addQuantity = (productId) => {
-    setQuantities(prevQuantities => ({
-      ...prevQuantities,
-      [productId]: (prevQuantities[productId] || 1) + 1
-    }));
   
-  };
+const defaultQuantity = 1;
+const addQuantity = (productId) => {
+  const updatedQuantities = { ...quantities };
+
+  if (updatedQuantities[productId]) {
+    updatedQuantities[productId]++;
+  } else {
+    updatedQuantities[productId] = defaultQuantity + 1; // Start from defaultQuantity + 1
+  }
+
+  setQuantities(updatedQuantities);
+};
+  
+// const addQuantity = (productId) => {
+//   setQuantities(prevQuantities => ({
+//     ...prevQuantities,
+//     [productId]: (prevQuantities[productId] || 1) + 1
+//   }));
+
+// };
 
   const removeQuantity = (productId) => {
     if (quantities[productId] > 1) {
