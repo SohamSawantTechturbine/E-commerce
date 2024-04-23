@@ -13,10 +13,14 @@ export const AuthContext = createContext({
    setTotalPrice:()=>{},
     producttitle:[],
     setproducttitle:()=>{},
-    mode:null,
-    setMode:()=>{},
-    modename:null, statemodename:()=>{},
-    toggleMode: () => {},
+    isLogin: false,
+  setIsLogin: () => {},
+  login: () => {},
+  logout: () => {},
+  products:null,
+  setProducts:()=>{ },
+  tokendata:"",
+  settokendata:()=>{}
 });
 
 export const useAuthContext = () => useContext(AuthContext);
@@ -27,32 +31,21 @@ export const AuthContextProvider = ({ children }) => {
     const [usernameInput, setUsernameInput] = useState(null);
     const[cartdata,setcartdata]=useState([]);
     const [totalPrice, setTotalPrice] = useState();   
-   // const[mode ,setMode]=useState('light')
-    //const[modename,setmodename]=useState('switch DarkMode')
+    const [products, setProducts] = useState([]);
     const [producttitle, setproducttitle] = useState([]);
-    // useEffect(() => {
-    //     const storedMode = localStorage.getItem('mode');
-    //     const storedModeName=localStorage.getItem('modename')
-    //     if (storedMode) {
-    //         setMode(storedMode);
-    //         setmodename(storedModeName)
-    //           // document.body.style.backgroundColor = newMode === 'light' ? '#FFFFFF' : '#042743';
-    //     }
-    // }, []);
+    const [tokendata, settokendata] = useState([]);
+    const login = () => {
 
-   
-//     useEffect(() => {
-//         localStorage.setItem('mode', mode);
-//         localStorage.setItem('modename',modename)
-//     }, [mode]);
+        setIsLogin(true);
+      };
+    
+      const logout = () => {
 
-//     const toggleMode = () => {
-//         setMode(currentMode => (currentMode === 'light' ? 'dark document.body.style.backgroundColor = "#042743"' : 'light  document.body.style.backgroundColor = "white"'));
-//         setmodename(prev=>{prev==='switch DarkMode '?'switch LightMode':'switch DarkMode  '})
-//    // document.body.style.backgroundColor = newMode === 'light' ? '#FFFFFF' : '#042743';
-//  };
+        setIsLogin(false);
+      };
+    
 
-    const providerValue = { isLogin, setIsLogin, register,  SetRegister,usernameInput, setUsernameInput,cartdata,setcartdata,totalPrice, setTotalPrice, producttitle, setproducttitle};
+    const providerValue = { login, logout,products, setProducts, isLogin, setIsLogin, register,tokendata, settokendata,  SetRegister,usernameInput, setUsernameInput,cartdata,setcartdata,totalPrice, setTotalPrice, producttitle, setproducttitle};
  
     // Return the context provider
     return React.createElement(AuthContext.Provider, { value: providerValue }, children);

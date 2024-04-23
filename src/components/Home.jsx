@@ -1,50 +1,98 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthContext } from '../context';
 import axios from 'axios';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation,Link } from 'react-router-dom';
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 toast.configure();
 
 export const Home = ({ searchTerm }) => {
-  const { usernameInput, cartdata, setcartdata } = useAuthContext();
-  const [products, setProducts] = useState([]);
+  const { usernameInput, cartdata, setcartdata,products,setProducts ,isLogin,setIsLogin} = useAuthContext();
+  
+  useEffect(() => {
+    console.log("Updated cartdata:", cartdata);
+  }, [cartdata]);
+  
   const navigate = useNavigate();
   const location = useLocation();
   const category = location.search ? new URLSearchParams(location.search).get('category') : null;
-
+  // useEffect(() => {
+  //   const fetchProducts = async () => {
+  //     try {
+  //       const response = await axios.get('http://localhost:9000/product-data');
+  //       setProducts(response.data);
+  //       localStorage.setItem('products', JSON.stringify(response.data));
+  //     } catch (error) {
+  //       console.error('Error fetching products:', error);
+  //     }
+  //   };
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('https://fakestoreapi.com/products');
+        const response = await axios.post('http://localhost:9000/product-data');
         setProducts(response.data);
         localStorage.setItem('products', JSON.stringify(response.data));
       } catch (error) {
         console.error('Error fetching products:', error);
       }
     };
-
+    
     const savedProducts = localStorage.getItem('products');
     if (savedProducts) {
       setProducts(JSON.parse(savedProducts));
     } else {
       fetchProducts();
     }
-  }, []);
-
-  const handleAddToCart = (product) => {
-    const user = JSON.parse(localStorage.getItem("userData"));
-    user.forEach((i) => {
-      if (i.username) {
-        setcartdata((prev) => ([...prev, product]));
-      } else {
-        navigate("/");
+    const token = localStorage.getItem("token");
+    console.log(token)
+   
+    if (token) {
+      setIsLogin(true);
+   
+        // navigate("/home")
       }
-    });
-  };
+  }, []);
+ 
+  const handleAddToCart = (product) => {
+    const token = localStorage.getItem("token");
+    //console.log(isLogin);
 
-  const handleProceedToCart = () => {
+    if (isLogin) {
+      fetch("http://localhost:9000/add-to-cart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, 
+        },
+        body: JSON.stringify({ product }),
+     })
+        .then((response) => {
+          console.log(response.cart)
+          if (response.ok) {
+            // Item added successfully
+            return response.json();
+         
+           }
+        }).then((data) => {
+          // Update the cart data in the frontend
+          console.log( data.cart)
+          setcartdata((prev) => [...prev, data.cart]);
+          console.log(cartdata)
+      })
+        .catch((error) => {
+          console.error("Error adding item to cart:", error);
+        });
+    } else {
+      // User is not authenticated, redirect them to the login page
+      navigate("/");
+    }
+   console.log(cartdata)
+  //  console.log(product);
+     };
+
+
+      const handleProceedToCart = () => {
     navigate('/addcart');
   };
   
@@ -92,6 +140,8 @@ export const Home = ({ searchTerm }) => {
           <button className="text-gray-600 bg-red-600 mt-4" onClick={handleProceedToCart}>Proceed to Cart</button>
         </div>
       </div>
+     
+      
     </>
   );
 };

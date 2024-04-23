@@ -1,106 +1,137 @@
 import React, { useEffect, useState } from 'react';
 import { useAuthContext } from '../../context';
 import { useNavigate } from 'react-router-dom';
-
+import axios from 'axios';
 
 function Addcart() {
-  
-  const { cartdata, setcartdata, totalPrice, setTotalPrice ,producttitle,setproducttitle } = useAuthContext();
+  const { cartdata, setcartdata, totalPrice, setTotalPrice } = useAuthContext();
   const navigate = useNavigate();
- 
+  const [quantities, setQuantities] = useState({});
 
-  const [quantities, setQuantities] = useState(() => {
-    const storedQuantities = JSON.parse(localStorage.getItem('quantities'));
-    return storedQuantities || {};
-  });
-  useEffect(() => {
-    const storedCartData = JSON.parse(localStorage.getItem('cartData'));
-    if (storedCartData) {
-      setcartdata(storedCartData);
-    }
-  }, []);
+  
+  const addQuantity = async (productId) => {
+    const product = cartdata.find((product) => product.productId === productId);
+    try {
+      const updatedQuantities = { ...quantities };
+  //    console.log(updatedQuantities)
+      updatedQuantities[productId] = (updatedQuantities[productId] || product.quantity) + 1;
+      setQuantities(updatedQuantities);
+      updateTotalPrice(cartdata, updatedQuantities);
 
-  useEffect(() => {
-    updateTotalPrice(cartdata);
-    localStorage.setItem('cartData', JSON.stringify(cartdata));
-  }, [cartdata, quantities]);
-
-  const removeFromCart = (productId) => {
-    const updatedCart = cartdata.filter((product) => product.id !== productId);
-    setcartdata(updatedCart);
-    updateTotalPrice(updatedCart);
-    {
-      setQuantities(prevQuantities => ({
-        ...prevQuantities,
-        [productId]: (prevQuantities[productId] || 0) -prevQuantities[productId]
-      }));
+      const token = localStorage.getItem('token');
+      await axios.put(`http://localhost:9000/addQuantity/${productId}`, { quantity: updatedQuantities[productId] }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+    } catch (error) {
+      console.error('Error updating quantity:', error);
     }
   };
-
+  const removeQuantity = async (productId) => {
+    const product = cartdata.find((product) => product.productId === productId);
+    
+    if (product.quantity > 1) {
+      try {
+        const updatedQuantities = { ...quantities };
+        
+        updatedQuantities[productId] = (updatedQuantities[productId] || product.quantity) - 1;
+        setQuantities(updatedQuantities);
+        updateTotalPrice(cartdata, updatedQuantities);
+  
+        const token = localStorage.getItem('token');
+        await axios.put(`http://localhost:9000/removeQuantity/${productId}`, { quantity: updatedQuantities[productId] }, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+      } catch (error) {
+        console.error('Error updating quantity:', error);
+      }
+    }
+  };
+  
+  
   const updateTotalPrice = (cart) => {
-      const totalPrice = Math.ceil(cart.reduce((acc, product) => acc + product.price * (quantities[product.id] || 1), 0));
+   // console.log(cart)
+   // console.log(quantities)
+    const totalPrice = cart?.reduce((acc, product) => {
+      const productPrice = parseFloat(product.productPrice);
+      const quantity = product.quantity 
+      return acc + productPrice * quantity;
+    }, 0);
     setTotalPrice(totalPrice);
   };
 
-  const navigateToPayment = () => {
-    navigate("/payment", { state: { products: cartdata, quantities: quantities } } );
-  };
   useEffect(() => {
-    localStorage.setItem('quantities', JSON.stringify(quantities));
-  }, [quantities]);
+    const fetchCartData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:9000/getcartdata', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
 
+        setcartdata(response?.data?.cart);
+        setQuantities(response.data.quantities);
+        updateTotalPrice(response.data.cart);
+      } catch (error) {
+        console.error('Error fetching cart data:', error);
+      }
+    };
+    
+    fetchCartData();
+  }, [removeQuantity,addQuantity]); 
+
+
+
+  const removeFromCart = async (productId) => {
+    try {
+      const updatedCart = cartdata.filter((product) => product.productId !== productId);
+      setcartdata(updatedCart);
+      setQuantities((prevQuantities) => {
+        const newQuantities = { ...prevQuantities };
+        delete newQuantities[productId];
+        return newQuantities;
+      });
   
-const defaultQuantity = 1;
-const addQuantity = (productId) => {
-  const updatedQuantities = { ...quantities };
-
-  if (updatedQuantities[productId]) {
-    updatedQuantities[productId]++;
-  } else {
-    updatedQuantities[productId] = defaultQuantity + 1; // Start from defaultQuantity + 1
-  }
-
-  setQuantities(updatedQuantities);
-};
+      // Remove item from backend
+      const token = localStorage.getItem('token');
+      await axios.delete(`http://localhost:9000/removeFromCart/${productId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
   
-// const addQuantity = (productId) => {
-//   setQuantities(prevQuantities => ({
-//     ...prevQuantities,
-//     [productId]: (prevQuantities[productId] || 1) + 1
-//   }));
-
-// };
-
-  const removeQuantity = (productId) => {
-    if (quantities[productId] > 1) {
-      setQuantities(prevQuantities => ({
-        ...prevQuantities,
-        [productId]: (prevQuantities[productId] || 0) - 1
-      }));
+      updateTotalPrice(updatedCart, quantities);
+    } catch (error) {
+      console.error('Error removing item from cart:', error);
     }
+  };
+
+  const navigateToPayment = () => {
+    navigate("/payment", { state: { products: cartdata, quantities: quantities } });
   };
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-4">Cart Page</h1>
-      {cartdata.length > 0 ? (
+      {cartdata && cartdata.length > 0 ? (
         <div>
           <h2 className="text-xl font-semibold mt-8 mb-4">Cart Items:</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {cartdata.map((product) => (
-              <div key={product.id} className="bg-white shadow-md rounded-lg p-4">
-                <h3 className="text-lg font-semibold mb-2"  >{product.title}</h3>
-               
-                <p className="text-gray-600 mb-2">${product.price}</p>
-                <p className="text-gray-600 mb-2">Quantity: {quantities[product.id] || 1}</p>
-                <p className="text-gray-600 mb-2">{product.category}</p>
-                <img src={product.image} alt={product.title} className="w-full h-48 object-cover mb-4" />
-                <button className="text-white bg-red-600 rounded px-4 py-2 mt-2" onClick={() => removeFromCart(product.id)}>Remove from Cart</button>
-                <button className="text-white bg-green-600 rounded px-4 py-2 mt-2 ml-2" onClick={() => addQuantity(product.id)}>+</button>
-                <button className="text-white bg-blue-600 rounded px-4 py-2 mt-2 ml-2" onClick={() => removeQuantity(product.id)}>-</button>
+            {cartdata.map((product, index) => (
+              <div key={index} className="bg-white shadow-md rounded-lg p-4">
+                <h3 className="text-lg font-semibold mb-2">{product.productTitle}</h3>  
+                <p className="text-gray-600 mb-2">${product.productPrice}</p>
+                <p className="text-gray-600 mb-2">{product.quantity }</p>
+                <img src={product.productimage} alt={product.title} className="w-full h-48 object-cover mb-4" /> 
+                <button className="text-white bg-red-600 rounded px-4 py-2 mt-2" onClick={() => removeFromCart(product.productId)}>Remove from Cart</button>
+                <button className="text-white bg-green-600 rounded px-4 py-2 mt-2 ml-2" onClick={() => addQuantity(product.productId)}>+</button>
+                <button className="text-white bg-blue-600 rounded px-4 py-2 mt-2 ml-2" onClick={() => removeQuantity(product.productId)}>-</button>
               </div>
             ))}
-          
           </div>
           <div className="flex justify-center items-center mt-8">
             <div className="grid grid-cols-2 gap-4">
@@ -112,9 +143,7 @@ const addQuantity = (productId) => {
       ) : (
         <p className="mt-8">No items in the cart.</p>
       )}
-   
     </div>
-    
   );
 }
 

@@ -26,6 +26,29 @@ export const Register = () => {
             toast.error("Password and Confirm Password do not match");
             return;
         }
+        const formData={
+            username:username,
+            password:password
+        };
+        fetch("http://localhost:9000/register-data", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(formData)
+    })
+    
+    .then(response => {
+      if (response.ok) {
+       
+      } else {
+        throw new Error("Failed to submit data");
+      }
+    })
+    .catch(error => {
+      console.error("Error submitting data:", error);
+    });
+  
         saveData();
         toast.success("Registered successfully. You can click on the login button and enjoy.");
     }

@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import jsPDF from 'jspdf'
+import {loadStripe} from '@stripe/stripe-js';
 toast.configure();
 function Payment() {
     const { totalPrice, cartdata } = useAuthContext();
@@ -63,12 +64,34 @@ function Payment() {
     //         console.log('Form submission failed. Please check your inputs.');
     //     }
     // };
-    const handleData = (e) => {
-      e.preventDefault();
-      const isFormValid = validateForm();
+    const handleData = async(e) => {
+        e.preventDefault();
   
-      if (isFormValid) {
+        const stripe=await loadStripe("pk_test_51P8Kf4SEE7AHIzyh3h1lDIjVr5WV1WO6kPl467ilPkykT9zAk1WWWVNj9URS3rEY38IP4yz64TLIOIUGXaovccBZ00wUq9U8dc")
+        const body={
+            products:cartdata,
+            productprice:totalPrice
+        }
+       const headers={
+        "Content-Type":"application/json"
+       }
+       const response =await fetch("http://localhost:9000/create-checkout-session",{
+        method:"POST",
+        headers:headers,
+        body:JSON.stringify(body)
+       });
+       const session=await response.json();
+       const result=stripe.redirectToCheckout({
+        sessionId:session.id
+       });
+       
+       
+       
+        const isFormValid = validateForm();
+
         if (isFormValid) {
+            // Handle PDF generation and saving
+            // Then handle storing payment details
             const pdf = new jsPDF();
             pdf.text("Payment Details", 10, 10);
             pdf.text(`First Name: ${firstName}`, 10, 20);
@@ -82,8 +105,8 @@ function Payment() {
           
             let y = 90; 
             cartdata.forEach((product) => {
-                pdf.text(`Product: ${product.title}`, 10, y);
-                pdf.text(`Quantity: ${quantities[product.id] || 1}`, 170, y);
+                pdf.text(`Product: ${product.productTitle}`, 10, y);
+                pdf.text(`Quantity: ${product.quantity}`, 170, y);
                 y += 10; 
             });
         
@@ -91,31 +114,24 @@ function Payment() {
         
             // Save PDF
             pdf.save('payment_details.pdf');
+            const newPayment = {
+                firstName,
+                lastName,
+                phone,
+                email,
+                address,
+                city,
+                state,
+                totalPrice
+            };
+            const updatedPaymentDetails = [...paymentDetails, newPayment];
+            setpaymentDetails(updatedPaymentDetails);
+            localStorage.setItem('AfterPaymentDetail', JSON.stringify(updatedPaymentDetails));
+            toast("Your payment was successful and PDF download started");
+        } else {
+            console.log('Form submission failed. Please check your inputs.');
         }
-        
-        
-       //   const newdata = [firstName, lastName, phone, email, address, city, state, totalPrice];
-          const newdata={
-                 firstname:firstName,
-                 lastname:lastName,
-                 Phone:phone,
-                 Email:email,
-                 Address:address,
-                 City:city,
-                 State:state,
-                 TotalPrice:totalPrice
-          }
-          setpaymentDetails((prev) => {
-              const updatedPaymentDetails = [{...prev, newdata}];
-              localStorage.setItem('AfterPaymentDetail', JSON.stringify(updatedPaymentDetails));
-              { toast("your payement succesfull,pdf download started")}
-              return updatedPaymentDetails;
-          });
-      } else {
-          console.log('Form submission failed. Please check your inputs.');
-      }
-  };
-  
+    };
 
     const validateFirstName = () => {
         setFirstNameValid(firstName.trim() !== '');
@@ -211,8 +227,8 @@ function Payment() {
                             <tbody>
                                 {cartdata.map((product, index) => (
                                     <tr key={index}>
-                                        <td className="border border-gray-400 py-2">{product.title}</td>
-                                        <td className="border border-gray-400 py-2">{quantities[product.id] || 1}</td>
+                                        <td className="border border-gray-400 py-2">{product.productTitle}</td>
+                                        <td className="border border-gray-400 py-2">{product.quantity}</td> 
                                     </tr>
                                 ))}
                                 <tr>
