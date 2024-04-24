@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.2.4",
+    "@material-tailwind/react": "^2.1.9",
     "@stripe/stripe-js": "^3.3.0",
     "axios": "^1.6.8",
     "jspdf": "^2.5.1",

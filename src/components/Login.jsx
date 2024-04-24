@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContextProvider, useAuthContext } from '../context';
 import { Link } from 'react-router-dom';
+import { toast,Slide } from "react-toastify";
 export const Login = () => {
 
   const [username, setUsername] = useState('');
@@ -41,7 +42,9 @@ export const Login = () => {
   })
   .catch((error) => {
       console.error("Error submitting data:", error);
-      alert("Invalid username or password. Click on Register to register yourself.");
+      toast.error("Invalid username or password. Click on Register to register yourself",{
+        position:"top-center",    transition: Slide});
+     // alert("Invalid username or password. Click on Register to register yourself.");
   });
 }
 useEffect(() => {

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 function Addcart() {
-  const { cartdata, setcartdata, totalPrice, setTotalPrice } = useAuthContext();
+  const { cartdata, setcartdata, totalPrice, setTotalPrice,setIsLogin,isLogin } = useAuthContext();
   const navigate = useNavigate();
   const [quantities, setQuantities] = useState({});
 
@@ -64,6 +64,7 @@ function Addcart() {
   };
 
   useEffect(() => {
+
     const fetchCartData = async () => {
       try {
         const token = localStorage.getItem('token');
@@ -80,7 +81,7 @@ function Addcart() {
         console.error('Error fetching cart data:', error);
       }
     };
-    
+  
     fetchCartData();
   }, [removeQuantity,addQuantity]); 
 
@@ -113,16 +114,24 @@ function Addcart() {
   const navigateToPayment = () => {
     navigate("/payment", { state: { products: cartdata, quantities: quantities } });
   };
-
+  const navigatetoorderpage=()=>{
+    navigate("/orderhistory")
+  }
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-4">Cart Page</h1>
+    <div className="container  mx-auto p-4 bg-yellow-100">
+    <div className="flex items-center justify-between max-w-9xl">
+      <h1 className="text-3xl font-bold mb-4 ml-60">Cart Page</h1>
+      <img className="h-10 w-20 cursor-pointer" onClick={navigatetoorderpage} src="https://i0.wp.com/www.alphr.com/wp-content/uploads/2022/10/featured-42.png?fit=600%2C300&ssl=1" alt="Pay Now" />
+    </div>
+  
+  
+
       {cartdata && cartdata.length > 0 ? (
         <div>
-          <h2 className="text-xl font-semibold mt-8 mb-4">Cart Items:</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <h2 className="text-xl font-semibold mt-8 mb-4 ">Cart Items:</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 ">
             {cartdata.map((product, index) => (
-              <div key={index} className="bg-white shadow-md rounded-lg p-4">
+              <div key={index} className="bg-white shadow-md rounded-lg p-4 bg-gray-100 ">
                 <h3 className="text-lg font-semibold mb-2">{product.productTitle}</h3>  
                 <p className="text-gray-600 mb-2">${product.productPrice}</p>
                 <p className="text-gray-600 mb-2">{product.quantity }</p>
@@ -138,11 +147,15 @@ function Addcart() {
               <h3 className="text-xl font-semibold rounded-lg p-2">Total Price: ${totalPrice}</h3>
               <img className="h-20 w-30 cursor-pointer" onClick={navigateToPayment} src="https://img.freepik.com/premium-vector/black-finger-push-pay-button-icon-concept-online-shopping-retail-ecommerce-web-trade-business-simple-flat-trend-modern-payment-logotype-graphic-design-isolated-white-background_775815-746.jpg" alt="Pay Now" />
             </div>
+            
           </div>
         </div>
       ) : (
         <p className="mt-8">No items in the cart.</p>
+
       )}
+      
+            
     </div>
   );
 }

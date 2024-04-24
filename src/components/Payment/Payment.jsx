@@ -50,23 +50,8 @@ function Payment() {
         return isFirstNameValid && isLastNameValid && isPhoneValid && isEmailValid && isAddressValid && isCityValid && isStateValid;
     };
 
-    // const handleData = (e) => {
-    //     e.preventDefault();
-    //     const isFormValid = validateForm();
+     const paymentgateway=async()=>{
 
-    //     if (isFormValid) {
-    //       alert('Form submission successful');
-          
-    //   let newdata = [firstName, lastName, phone, email, address, city, state,totalPrice];
-    //       setpaymentDetails((prev)=> ([...prev , newdata]))
-    //         localStorage.setItem('AfterPaymentDetail', JSON.stringify(paymentDetails));
-    //     } else {
-    //         console.log('Form submission failed. Please check your inputs.');
-    //     }
-    // };
-    const handleData = async(e) => {
-        e.preventDefault();
-  
         const stripe=await loadStripe("pk_test_51P8Kf4SEE7AHIzyh3h1lDIjVr5WV1WO6kPl467ilPkykT9zAk1WWWVNj9URS3rEY38IP4yz64TLIOIUGXaovccBZ00wUq9U8dc")
         const body={
             products:cartdata,
@@ -84,9 +69,16 @@ function Payment() {
        const result=stripe.redirectToCheckout({
         sessionId:session.id
        });
+       if (result.error) {
+        throw new Error(result.error.message);
+    }
        
-       
-       
+     }
+    
+    const handleData = async(e) => {
+        e.preventDefault();
+  
+       await paymentgateway();
         const isFormValid = validateForm();
 
         if (isFormValid) {
@@ -124,14 +116,40 @@ function Payment() {
                 state,
                 totalPrice
             };
+            const token = localStorage.getItem("token");
+            try {
+                const response = await fetch("http://localhost:9000/payment-details", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({cartdata,firstName,phone}),
+                });
+    
+                if (response.ok) {
+                    const data = await response.json();
+                    // Update the cart data in the frontend if necessary
+                    // For example:
+                    // setCartData(data.cart);
+                    toast("Cart data sent to server and stored successfully.");
+                } else {
+                    throw new Error("Failed to send cart data to server.");
+                }
+            } catch (error) {
+                console.error("Error sending cart data:", error);
+                toast.error("Failed to send cart data to server.");
+            }
+            console.log(cartdata);
             const updatedPaymentDetails = [...paymentDetails, newPayment];
             setpaymentDetails(updatedPaymentDetails);
             localStorage.setItem('AfterPaymentDetail', JSON.stringify(updatedPaymentDetails));
-            toast("Your payment was successful and PDF download started");
-        } else {
-            console.log('Form submission failed. Please check your inputs.');
+            toast("Your payment was successful and PDF download started"); } else {
+            console.log("Form submission failed. Please check your inputs.");
         }
-    };
+           
+        }
+    
 
     const validateFirstName = () => {
         setFirstNameValid(firstName.trim() !== '');
@@ -245,15 +263,3 @@ function Payment() {
 }
 
 export default Payment;
-
-
-
-
-
-
-
-
-
-
-
-

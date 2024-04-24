@@ -39,8 +39,8 @@ export const Navbar = ({ onSearchChange }) => {
 
     return (
 
-        <div className="">
-            <nav className="bg-white border-gray-200 dark:bg-gray-900  mx-auto">
+        <div className=" bg-yellow-50   border-collapse border border-gray-300">
+            <nav className="bg-red border-gray-200 dark:bg-gray-900  mx-auto">
                 <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
                     <div className="flex items-center">
                         <img src="https://t3.ftcdn.net/jpg/02/47/48/00/360_F_247480017_ST4hotATsrcErAja0VzdUsrrVBMIcE4u.jpg" className="h-8" alt="Flowbite Logo" />

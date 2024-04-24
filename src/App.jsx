@@ -13,6 +13,7 @@ import Addcart from './components/AddCart/Addcart'
 import Payment from './components/Payment/Payment'
 import Success from './components/Success'
 import Cancel from './components/Cancel'
+import Orderhistory from './components/Orderhistory/Orderhistory'
 
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
   
   return (
     <>
+    <div >
       {/* <Login/> */}
       <AuthContextProvider>
       
@@ -52,10 +54,12 @@ function App() {
             <Route path="/payment" element={<Payment/>}/>
             <Route path="/success" element={<Success/>}/>
            <Route path="/cancel" element={<Cancel/>}/>
+           <Route path="/orderhistory" element={<Orderhistory/>}/>
           </Routes>
           <Footer/>
         </BrowserRouter>
       </AuthContextProvider>
+      </div>
     </>
   )
 }
