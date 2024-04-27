@@ -118,7 +118,7 @@ function Addcart() {
     navigate("/orderhistory")
   }
   return (
-    <div className="container  mx-auto p-4 bg-yellow-100">
+    <div className="container  mx-auto p-4 bg-gray-100">
     <div className="flex items-center justify-between max-w-9xl">
       <h1 className="text-3xl font-bold mb-4 ml-60">Cart Page</h1>
       <img className="h-10 w-20 cursor-pointer" onClick={navigatetoorderpage} src="https://i0.wp.com/www.alphr.com/wp-content/uploads/2022/10/featured-42.png?fit=600%2C300&ssl=1" alt="Pay Now" />
@@ -126,18 +126,18 @@ function Addcart() {
   
   
 
-      {cartdata && cartdata.length > 0 ? (
+      {isLogin&&cartdata && cartdata.length > 0 ? (
         <div>
           <h2 className="text-xl font-semibold mt-8 mb-4 ">Cart Items:</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 ">
             {cartdata.map((product, index) => (
-              <div key={index} className="bg-white shadow-md rounded-lg p-4 bg-gray-100 ">
-                <h3 className="text-lg font-semibold mb-2">{product.productTitle}</h3>  
-                <p className="text-gray-600 mb-2">${product.productPrice}</p>
-                <p className="text-gray-600 mb-2">{product.quantity }</p>
+              <div key={index} className="bg-white border border-black  justify-center items-center shadow-2xl rounded-lg p-4 bg-gray-100 ">
+                <h3 className="text-lg font-semibold mb-2 mr-5 ml-32">{product.productTitle}</h3>  
+                <p className="text-black ml-2  mb-2">price$:-{product.productPrice}</p>
+                <p className="text-black  ml-2 mb-2">quantity:-{product.quantity }</p>
                 <img src={product.productimage} alt={product.title} className="w-full h-48 object-cover mb-4" /> 
-                <button className="text-white bg-red-600 rounded px-4 py-2 mt-2" onClick={() => removeFromCart(product.productId)}>Remove from Cart</button>
-                <button className="text-white bg-green-600 rounded px-4 py-2 mt-2 ml-2" onClick={() => addQuantity(product.productId)}>+</button>
+                <button className="text-white bg-red-600 rounded px-4 py-2 mt-2 ml-4" onClick={() => removeFromCart(product.productId)}>Remove from Cart</button>
+                <button className="text-white bg-green-600 rounded px-4 py-2 mt-2 ml-10" onClick={() => addQuantity(product.productId)}>+</button>
                 <button className="text-white bg-blue-600 rounded px-4 py-2 mt-2 ml-2" onClick={() => removeQuantity(product.productId)}>-</button>
               </div>
             ))}

@@ -181,8 +181,8 @@ function Payment() {
 
     return (
         <>
-            <div className="flex h-full">
-                <div className="max-w-md w-full py-7 px-5 bg-white border-yellow-500 border-4 shadow-lg rounded-lg mr-4">
+            <div className="flex h-full bg-gray-100">
+                <div className=" ml-5 max-w-md w-full py-7 px-5 bg-white border-yellow-500 border-4 shadow-lg rounded-lg mr-4">
                     <div className='card-header mb-4'>
                         <h4 className="text-lg font-semibold">Basic Information</h4>
                     </div>
@@ -233,24 +233,24 @@ function Payment() {
                         </div>
                     </div>
                 </div>
-                <div className="flex-1">
-                    <div className="w-full">
-                        <table className="table-auto border border-collapse border-gray-400 w-full">
+                <div className="flex-1 ">
+                    <div className="w-full bg-white">
+                        <table className="table-auto border border-collapse border border-black w-full">
                             <thead className="bg-yellow-200">
                                 <tr>
-                                    <th className="w-1/2 border border-gray-400 py-2">Product</th>
-                                    <th className="w-1/2 border border-gray-400 py-2">Quantity</th>
+                                    <th className="w-1/2 border border border-black py-2">Product</th>
+                                    <th className="w-1/2 border border border-black py-2">Quantity</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {cartdata.map((product, index) => (
                                     <tr key={index}>
-                                        <td className="border border-gray-400 py-2">{product.productTitle}</td>
-                                        <td className="border border-gray-400 py-2">{product.quantity}</td> 
+                                        <td className="border border-black py-2">{product.productTitle}</td>
+                                        <td className="border border-black py-2">{product.quantity}</td> 
                                     </tr>
                                 ))}
                                 <tr>
-                                    <td className='font-bold'>Total Price</td>
+                                    <td className='font-bold border border-black'>Total Price</td>
                                     <td>${totalPrice}</td>
                                 </tr>
                             </tbody>

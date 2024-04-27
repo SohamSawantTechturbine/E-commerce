@@ -1,24 +1,58 @@
-import { Carousel } from "@material-tailwind/react";
- 
-function Coursel() {
+import { useState } from "react";
+import {
+  BsFillArrowRightCircleFill,
+  BsFillArrowLeftCircleFill,
+} from "react-icons/bs";
+export default function Carousel({ slides }) {
+  let [current, setCurrent] = useState(0);
+
+  let previousSlide = () => {
+    if (current === 0) setCurrent(slides.length - 1);
+    else setCurrent(current - 1);
+  };
+
+  let nextSlide = () => {
+    if (current === slides.length - 1) setCurrent(0);
+    else setCurrent(current + 1);
+  };
+
   return (
-    <Carousel className="rounded-xl">
-      <img
-        src="https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2560&q=80"
-        alt="image 1"
-        className="h-full w-full object-cover"
-      />
-      <img
-        src="https://images.unsplash.com/photo-1493246507139-91e8fad9978e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2940&q=80"
-        alt="image 2"
-        className="h-full w-full object-cover"
-      />
-      <img
-        src="https://images.unsplash.com/photo-1518623489648-a173ef7824f3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2762&q=80"
-        alt="image 3"
-        className="h-full w-full object-cover"
-      />
-    </Carousel>
+    <div className="overflow-hidden relative">
+      <div
+        className={`flex transition ease-out duration-40`}
+        style={{
+          transform: `translateX(-${current * 100}%)`,
+        }}
+      >
+        {slides.map((s) => {
+          return <img src={s} />;
+        })}
+      </div>
+
+      <div className="absolute top-0 h-full w-full justify-between items-center flex text-white px-10 text-3xl">
+        <button onClick={previousSlide}>
+          <BsFillArrowLeftCircleFill />
+        </button>
+        <button onClick={nextSlide}>
+          <BsFillArrowRightCircleFill />
+        </button>
+      </div>
+
+      <div className="absolute bottom-0 py-4 flex justify-center gap-3 w-full">
+        {slides.map((s, i) => {
+          return (
+            <div
+              onClick={() => {
+                setCurrent(i);
+              }}
+              key={"circle" + i}
+              className={`rounded-full w-5 h-5 cursor-pointer  ${
+                i == current ? "bg-white" : "bg-gray-500"
+              }`}
+            ></div>
+          );
+        })}
+      </div>
+    </div>
   );
 }
-export default Coursel
